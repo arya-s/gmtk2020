@@ -1,0 +1,17 @@
+{
+    "dependencies": {
+        "keymage": "^1.1.3",
+        "stats.js": "^0.17.0",
+        "typescript": "^3.5.3"
+    },
+    "scripts": {
+        "start": "parcel src/index.html"
+    },
+    "name": "bhawp",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "devDependencies": {
+        "parcel-bundler": "^1.12.3"
+    }
+}
