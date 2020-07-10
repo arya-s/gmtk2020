@@ -10,7 +10,7 @@ class LevelManager {
     public activeLevel: Level
 
     init() {
-        this.initLevel('sample_level')
+        this.initLevel('a_01')
     }
 
     initLevel(level: string) {
