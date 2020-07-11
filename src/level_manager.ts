@@ -10,7 +10,7 @@ class LevelManager {
     public activeLevel: Level
 
     init() {
-        this.initLevel('a_03')
+        this.initLevel('GY1')
     }
 
     initLevel(level: string) {
