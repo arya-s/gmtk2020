@@ -1,8 +1,9 @@
 import Vec2 from './vec2'
 import Sprite from './sprite'
+import crossSpriteSrc from '../data/sprites/cross.png'
 
 const cross = new Image()
-cross.src = 'cross.png'
+cross.src = crossSpriteSrc
 
 class Entity {
     public position: Vec2

@@ -242,7 +242,7 @@ class Player extends Actor {
         }
 
         this.sprite.render(context, this.position, new Vec2(this.half.x, this.half.y - 2))
-        // this.drawAABB(context)
+        this.drawAABB(context)
     }
 
     update(dt: number) {

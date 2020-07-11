@@ -5,6 +5,10 @@ class PlayerSprite extends Aseprite {
     constructor() {
         super(sprite)
     }
+
+    render() {
+        return
+    }
 }
 
 export default PlayerSprite
