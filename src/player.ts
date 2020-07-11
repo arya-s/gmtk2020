@@ -12,6 +12,7 @@ import Sound from './sound'
 import jumpSoundSrc from '../data/sounds/jump.mp3'
 import launchedSoundSrc from '../data/sounds/launched.mp3'
 import deathSoundSrc from '../data/sounds/death.mp3'
+import footstepSoundSrc from '../data/sounds/footstep.mp3'
 import MovingPlatform from './moving_platform'
 
 const MAX_RUN = 90
@@ -70,13 +71,22 @@ class Player extends Actor {
     private jumpSound = new Sound(jumpSoundSrc)
     private deathSound = new Sound(deathSoundSrc)
     private launchedSound = new Sound(launchedSoundSrc)
+    private stepSound = new Sound(footstepSoundSrc)
     public momentumSpeed = new Vec2(0, 0)
     private launched = false
+
+    private queue = []
+    private activeFrameInputs = []
+    private play = false
 
     constructor() {
         super(new Vec2(4, 150), new Vec2(4, 6))
         this.onCollideH = this.onCollideH.bind(this)
         this.onCollideV = this.onCollideV.bind(this)
+
+        document.getElementById('replay_button').onclick = () => {
+            this.play = true
+        }
     }
 
     momentumBoost() {
@@ -246,6 +256,7 @@ class Player extends Actor {
     }
 
     update(dt: number) {
+        this.activeFrameInputs = []
         if (this.launchedBoostCheck()) {
             console.log('we launched bois')
         }
@@ -331,7 +342,12 @@ class Player extends Actor {
         this.moveX(this.speed.x * dt, this.onCollideH)
         this.moveY(this.speed.y * dt, this.onCollideV)
 
-        this.handleInput()
+        if (this.play) {
+            this.replayInput()
+        } else {
+            this.recordInput()
+        }
+        // this.handleInput()
         this.sprite.update(dt)
 
         this.wasGrounded = this.grounded
@@ -418,13 +434,6 @@ class Player extends Actor {
         }
     }
 
-    teleport() {
-        if (this.teleportTimer <= 0) {
-            this.moveX(TELEPORT_DISTANCE * this.facing, () => {})
-            this.teleportTimer = TELEPORT_TIME
-        }
-    }
-
     jump() {
         this.varJumpTimer = VAR_JUMP_TIME
         this.autoJumpTimer = AUTO_JUMP_TIME
@@ -501,30 +510,73 @@ class Player extends Actor {
         this.varJumpSpeed = this.speed.y
     }
 
-    handleInput() {
+    recordInput() {
         keyboard.update()
 
         if (keyboard.pressed(LEFT)) {
-            this.moveDir = -1
+            this.activeFrameInputs.push('pressed_left')
         } else if (keyboard.released(LEFT)) {
+            this.activeFrameInputs.push('released_left')
             if (keyboard.check(RIGHT)) {
-                this.moveDir = 1
+                this.activeFrameInputs.push('check_right')
             } else {
-                this.moveDir = 0
+                this.activeFrameInputs.push('check_left')
             }
         }
 
         if (keyboard.pressed(RIGHT)) {
-            this.moveDir = 1
+            this.activeFrameInputs.push('pressed_right')
         } else if (keyboard.released(RIGHT)) {
+            this.activeFrameInputs.push('released_right')
             if (keyboard.check(LEFT)) {
-                this.moveDir = -1
+                this.activeFrameInputs.push('check_left')
             } else {
+                this.activeFrameInputs.push('check_right')
+            }
+        }
+
+        if (keyboard.check(LEFT) || keyboard.check(RIGHT)) {
+            this.stepSound.play()
+        }
+
+        if (keyboard.pressed(JUMP)) {
+            this.activeFrameInputs.push('pressed_jump')
+        }
+
+        this.queue.push(this.activeFrameInputs)
+    }
+
+    replayInput() {
+        const frame = this.queue.shift()
+
+        if (!frame) {
+            return
+        }
+
+        let action = frame.shift()
+        if (action === 'pressed_left') {
+            this.moveDir = -1
+        } else if (action === 'released_left') {
+            action = frame.shift()
+            if (action === 'check_right') {
+                this.moveDir = 1
+            } else if (action === 'check_left') {
                 this.moveDir = 0
             }
         }
 
-        if (keyboard.pressed(JUMP)) {
+        if (action === 'pressed_right') {
+            this.moveDir = 1
+        } else if (action === 'released_right') {
+            action = frame.shift()
+            if (action === 'check_left') {
+                this.moveDir = -1
+            } else if (action === 'check_right') {
+                this.moveDir = 0
+            }
+        }
+
+        if (action === 'pressed_jump') {
             if (this.jumpGraceTimer > 0) {
                 this.jump()
             } else {
@@ -535,11 +587,47 @@ class Player extends Actor {
                 }
             }
         }
-
-        if (keyboard.pressed(TELEPORT)) {
-            this.teleport()
-        }
     }
+
+    // handleInput() {
+    //     keyboard.update()
+
+    //     if (keyboard.pressed(LEFT)) {
+    //         this.moveDir = -1
+    //     } else if (keyboard.released(LEFT)) {
+    //         if (keyboard.check(RIGHT)) {
+    //             this.moveDir = 1
+    //         } else {
+    //             this.moveDir = 0
+    //         }
+    //     }
+
+    //     if (keyboard.pressed(RIGHT)) {
+    //         this.moveDir = 1
+    //     } else if (keyboard.released(RIGHT)) {
+    //         if (keyboard.check(LEFT)) {
+    //             this.moveDir = -1
+    //         } else {
+    //             this.moveDir = 0
+    //         }
+    //     }
+
+    //     if (keyboard.pressed(JUMP)) {
+    //         if (this.jumpGraceTimer > 0) {
+    //             this.jump()
+    //         } else {
+    //             if (this.wallJumpCheck(1)) {
+    //                 this.wallJump(-1)
+    //             } else if (this.wallJumpCheck(-1)) {
+    //                 this.wallJump(1)
+    //             }
+    //         }
+    //     }
+
+    //     if (keyboard.pressed(TELEPORT)) {
+    //         this.teleport()
+    //     }
+    // }
 
     squish() {
         this.deathSound.play()
