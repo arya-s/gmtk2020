@@ -61,10 +61,14 @@ class Level {
     public wallToRemove = null
     public startRemoveTimer = false
 
-    public score = 0
+    constructor(player?: Player) {
+        if (player !== undefined) {
+            this.player = player
+        } else {
+            this.player = new Player()
+        }
 
-    constructor() {
-        this.player = new Player()
+        this.respawnPoint = new Vec2(this.player.position.x + 5, 20)
         this.camera.setTarget(this.player)
         this.actors = []
         this.solids = []
@@ -324,9 +328,9 @@ class Level {
         this.grid.render(context)
     }
 
-    onComplete() {
+    onComplete(player: Player) {
         if (this.nextLevel) {
-            level_manager.initLevel(this.nextLevel)
+            level_manager.initLevel(this.nextLevel, player)
         }
     }
 
@@ -394,17 +398,14 @@ class Level {
     }
 
     update(dt: number) {
-        if (this.blockingWalls.length === 0) {
-            levelManager.levelEnded()
-            return
-        }
-
         if (this.despawnTimer <= 0) {
             const randomWallIdx = Math.floor(Math.random() * this.blockingWalls.length)
             const wallToRemove = this.blockingWalls[randomWallIdx]
-            wallToRemove.color = '#ff0000'
-            wallToRemove.removing = true
-            this.wallToRemove = wallToRemove
+            if (wallToRemove !== null && wallToRemove !== undefined) {
+                wallToRemove.color = '#ff0000'
+                wallToRemove.removing = true
+                this.wallToRemove = wallToRemove
+            }
             this.despawnTimer = DESPAWN_TIMER
             this.removeTimer = REMOVE_TIMER
             this.startRemoveTimer = true
@@ -414,17 +415,21 @@ class Level {
 
         if (this.startRemoveTimer) {
             if (this.removeTimer <= 0) {
-                const solidIdx = this.solids.findIndex((v) => v.id === this.wallToRemove.id)
-                const wallIdx = this.blockingWalls.findIndex((v) => v.id === this.wallToRemove.id)
+                if (this.wallToRemove !== null && this.wallToRemove !== undefined) {
+                    const solidIdx = this.solids.findIndex((v) => v.id === this.wallToRemove.id)
+                    const wallIdx = this.blockingWalls.findIndex(
+                        (v) => v.id === this.wallToRemove.id
+                    )
 
-                this.wallToRemove.color = '#ffff00'
+                    this.wallToRemove.color = '#ffff00'
 
-                if (solidIdx !== -1 && wallIdx !== -1) {
-                    this.solids.splice(solidIdx, 1)
-                    this.blockingWalls.splice(wallIdx, 1)
+                    if (solidIdx !== -1 && wallIdx !== -1) {
+                        this.solids.splice(solidIdx, 1)
+                        this.blockingWalls.splice(wallIdx, 1)
+                    }
+                    this.startRemoveTimer = false
+                    levelManager.score += 10
                 }
-                this.startRemoveTimer = false
-                this.score += 10
             } else {
                 this.removeTimer -= dt
             }

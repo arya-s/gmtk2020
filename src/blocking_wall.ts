@@ -6,7 +6,7 @@ class BlockingWall extends Solid {
     public consumed = false
 
     render(context: CanvasRenderingContext2D) {
-        context.fillStyle = this.color
+        context.fillStyle = this.consumed ? '#ebc034' : this.color
         context.fillRect(this.left() + 0.5, this.top() + 0.5, this.width(), this.height())
     }
 }

@@ -56,7 +56,7 @@ const CLIMB_STILL_COST = 100 / 2
 
 class Player extends Actor {
     private sprite: PlayerSprite = new PlayerSprite()
-    private speed: Vec2 = new Vec2(0, 0)
+    public speed: Vec2 = new Vec2(0, 0)
     private moveDir: number = 0
     private climbDir = 0
     public facing: number = 1
@@ -146,10 +146,10 @@ class Player extends Actor {
         } else if (collider instanceof Death) {
             this.squish()
         } else if (collider instanceof Goal) {
-            LevelManager.activeLevel.onComplete()
+            LevelManager.activeLevel.onComplete(this)
         } else if (collider instanceof BlockingWall) {
             if (collider.removing && !collider.consumed) {
-                LevelManager.updateScore(30)
+                LevelManager.score += 30
                 collider.consumed = true
             }
         }
@@ -163,7 +163,9 @@ class Player extends Actor {
             this.wallSpeedRententionTimer = WALL_SPEED_RENTENTION_TIME
         }
 
-        this.speed.x = 0
+        if (!(collider instanceof Goal)) {
+            this.speed.x = 0
+        }
     }
 
     onCollideV(collider, sign) {
@@ -175,7 +177,9 @@ class Player extends Actor {
             }
         }
 
-        this.speed.y = 0
+        if (!(collider instanceof Goal)) {
+            this.speed.y = 0
+        }
     }
 
     isGrounded(): boolean {
@@ -193,6 +197,14 @@ class Player extends Actor {
 
         if (!collision.collided) {
             collision = collideAt(LevelManager.activeLevel.grid, this, new Vec2(0, 1))
+        }
+
+        if (collision.collided && collision.collider instanceof BlockingWall) {
+            const collider = collision.collider
+            if (collider.removing && !collider.consumed) {
+                LevelManager.score += 30
+                collider.consumed = true
+            }
         }
 
         return collision.collided
@@ -238,6 +250,12 @@ class Player extends Actor {
             }
 
             this.grabStamina = GRAB_STAMINA
+        } else if (this.climbing) {
+            if (this.facing === 1) {
+                this.sprite.play('WallSlideRight')
+            } else {
+                this.sprite.play('WallSlideLeft')
+            }
         } else {
             if (this.wallSlideDir !== 0) {
                 if (this.wallSlideDir === 1) {
@@ -245,7 +263,7 @@ class Player extends Actor {
                 } else {
                     this.sprite.play('WallSlideLeft')
                 }
-            } else if (!this.climbing) {
+            } else {
                 if (this.speed.y < 0) {
                     if (this.facing === 1) {
                         this.sprite.play('JumpRight')

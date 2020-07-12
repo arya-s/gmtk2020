@@ -141,7 +141,7 @@ class Grid {
         // context.closePath()
         // context.stroke()
         context.fillStyle = '#cacaca'
-        context.fillRect(pos.x - 0.5, pos.y + 0.5, this.cellSize.x, this.cellSize.y)
+        context.fillRect(pos.x - 0.5, pos.y - 0.5, this.cellSize.x, this.cellSize.y)
     }
 
     render(context: CanvasRenderingContext2D, color = '#cacaca') {
