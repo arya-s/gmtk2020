@@ -411,7 +411,7 @@ class Level {
                 wallToRemove.color = '#ff0000'
                 wallToRemove.removing = true
                 this.wallToRemove = wallToRemove
-                this.enemy.spawnAt(new Vec2(wallToRemove.position.x, wallToRemove.top() - 5))
+                this.enemy.spawnAt(new Vec2(wallToRemove.position.x, wallToRemove.top() - 5), wallToRemove)
             }
             this.despawnTimer = DESPAWN_TIMER
             this.removeTimer = REMOVE_TIMER
@@ -435,7 +435,6 @@ class Level {
                         this.blockingWalls.splice(wallIdx, 1)
                     }
                     this.startRemoveTimer = false
-                    levelManager.score += 10
                 }
             } else {
                 this.removeTimer -= dt

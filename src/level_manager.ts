@@ -1,7 +1,7 @@
 import levelIndex from '../data/levels/*.json'
 import Level from './level'
 import Player from './player'
-import { debug } from './utils'
+import { kFormatter } from './utils'
 
 interface LevelIndex {
     [levelName: string]: any
@@ -50,12 +50,12 @@ class LevelManager {
     render(context: CanvasRenderingContext2D) {
         this.activeLevel.render(context)
         if (this.levelRunning) {
-            this.renderText(context, `${this.score}`)
+            this.renderText(context, kFormatter(this.score))
         }
     }
 
     renderText(context, text) {
-        context.fillStyle = '#ebc034'
+        context.fillStyle = '#6abe30'
         context.font = '8px "Press Start 2P"'
         context.textAlign = 'left'
         context.textBaseline = 'middle'

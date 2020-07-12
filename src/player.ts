@@ -13,6 +13,7 @@ import Sound from './sound'
 import jumpSoundSrc from '../data/sounds/jump.mp3'
 import launchedSoundSrc from '../data/sounds/launched.mp3'
 import deathSoundSrc from '../data/sounds/death.mp3'
+import savingSoundSrc from '../data/sounds/saving.mp3'
 import MovingPlatform from './moving_platform'
 import StaminaBar from './stamina_bar'
 
@@ -81,6 +82,7 @@ class Player extends Actor {
     private jumpSound = new Sound(jumpSoundSrc)
     private deathSound = new Sound(deathSoundSrc)
     private launchedSound = new Sound(launchedSoundSrc)
+    private savingSound = new Sound(savingSoundSrc)
     public momentumSpeed = new Vec2(0, 0)
     private launched = false
     private grabStamina = GRAB_STAMINA
@@ -149,8 +151,9 @@ class Player extends Actor {
             LevelManager.activeLevel.onComplete(this)
         } else if (collider instanceof BlockingWall) {
             if (collider.removing && !collider.consumed) {
-                LevelManager.score += 30
+                LevelManager.score += 512
                 collider.consumed = true
+                this.savingSound.play()
             }
         }
     }
@@ -202,8 +205,9 @@ class Player extends Actor {
         if (collision.collided && collision.collider instanceof BlockingWall) {
             const collider = collision.collider
             if (collider.removing && !collider.consumed) {
-                LevelManager.score += 30
+                LevelManager.score += 512
                 collider.consumed = true
+                this.savingSound.play()
             }
         }
 

@@ -3,6 +3,9 @@ import sprite from '../data/sprites/virus.json'
 import Vec2 from './vec2'
 import { lerp } from './utils'
 import { easeInOutQuad } from './easing'
+import corruptingSoundSrc from '../data/sounds/corrupting.mp3'
+import Sound from './sound'
+import BlockingWall from './blocking_wall'
 
 const FADE_TIME = 1.6
 
@@ -13,17 +16,20 @@ class Enemy {
     private fade = false
     private fadeIn = true
     private fadeInTime = FADE_TIME
+    private corruptingSound = new Sound(corruptingSoundSrc)
+    private spawnFor: BlockingWall
 
     constructor(pos: Vec2) {
         this.pos = pos
         this.sprite.play('Idle')
     }
 
-    spawnAt(pos: Vec2) {
+    spawnAt(pos: Vec2, spawnFor) {
         this.pos = pos
         this.fade = true
         this.fadeIn = true
         this.fadeLerp = 0
+        this.spawnFor = spawnFor
     }
 
     render(context: CanvasRenderingContext2D) {
@@ -50,6 +56,10 @@ class Enemy {
                     this.fadeLerp = 0
                     this.fade = false
                 }
+            }
+
+            if (this.fadeLerp >= 1 && this.spawnFor && !this.spawnFor.consumed) {
+                this.corruptingSound.play()
             }
         }
     }
