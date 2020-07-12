@@ -5,7 +5,8 @@
         "typescript": "^3.5.3"
     },
     "scripts": {
-        "start": "parcel src/index.html"
+        "start": "parcel src/index.html",
+        "build": "parcel build src/index.html --public-url ./"
     },
     "name": "bhawp",
     "version": "1.0.0",

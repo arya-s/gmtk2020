@@ -1,6 +1,7 @@
 import Vec2 from './vec2'
 import Sprite from './sprite'
 import crossSpriteSrc from '../data/sprites/cross.png'
+console.log('cross', crossSpriteSrc)
 
 const cross = new Image()
 cross.src = crossSpriteSrc

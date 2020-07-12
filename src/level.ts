@@ -15,8 +15,7 @@ import { debug, CONSTANTS } from './utils'
 import WaterfallBottom from './waterfall_bottom'
 import SmallTorch from './small_torch'
 import tilesetSprite from '../data/tileset.png'
-import level_manager from './level_manager'
-import levelManager from './level_manager'
+import LevelManager from './level_manager'
 import Enemy from './enemy'
 
 interface TileLayers {
@@ -336,7 +335,7 @@ class Level {
 
     onComplete(player: Player) {
         if (this.nextLevel) {
-            level_manager.initLevel(this.nextLevel, player)
+            LevelManager.initLevel(this.nextLevel, player)
         }
     }
 

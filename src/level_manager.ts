@@ -17,7 +17,7 @@ class LevelManager {
     public sound = new Sound(threatLoopSoudnSrc)
 
     init() {
-        this.initLevel('level1')
+        this.initLevel('TDU1')
         this.sound.play(true)
     }
 
