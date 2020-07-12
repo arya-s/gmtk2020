@@ -1,8 +1,8 @@
 import Actor from './actor'
 import LevelManager from './level_manager'
 import Vec2 from './vec2'
-import { keyboard, JUMP, LEFT, RIGHT, TELEPORT } from './keys'
-import { collideAt, approach, lerp, collideOutsideAt } from './utils'
+import { keyboard, JUMP, UP, DOWN, LEFT, RIGHT, GRAB } from './keys'
+import { clamp, collideAt, approach, lerp, collideOutsideAt } from './utils'
 import PlayerSprite from './playersprite'
 import Spike, { KillFrom } from './spike'
 import Solid from './solid'
@@ -14,7 +14,7 @@ import jumpSoundSrc from '../data/sounds/jump.mp3'
 import launchedSoundSrc from '../data/sounds/launched.mp3'
 import deathSoundSrc from '../data/sounds/death.mp3'
 import MovingPlatform from './moving_platform'
-import BlockingWall from './blocking_wall'
+import StaminaBar from './stamina_bar'
 
 const MAX_RUN = 90
 const RUN_ACCEL = 1000
@@ -45,11 +45,20 @@ const LAUNCHED_BOOST_CHECK_SPEED_SQARED = 100 * 100
 const LAUNCHED_JUMP_CHECK_SPEED_SQUARED = 220 * 220
 const LAUNCHED_MIN_SPEED_SQUARED = 140 * 140
 const LAUNCHED_DOUBLE_SPEED_SQUARED = 150 * 150
+const CLIMB_CHECK_DIST = 2
+const CLIMB_UP_CHECK_DIST = 2
+const CLIMB_UP_SPEED = -45
+const CLIMB_DOWN_SPEED = 80
+const CLIMB_ACCEL = 900
+const GRAB_STAMINA = 100
+const CLIMB_UP_COST = 100 / 1.4
+const CLIMB_STILL_COST = 100 / 2
 
 class Player extends Actor {
     private sprite: PlayerSprite = new PlayerSprite()
     private speed: Vec2 = new Vec2(0, 0)
     private moveDir: number = 0
+    private climbDir = 0
     public facing: number = 1
     private moveXAmount: number = 0
     private grounded: boolean = false
@@ -74,6 +83,8 @@ class Player extends Actor {
     private launchedSound = new Sound(launchedSoundSrc)
     public momentumSpeed = new Vec2(0, 0)
     private launched = false
+    private grabStamina = GRAB_STAMINA
+    private staminaBar = new StaminaBar()
 
     constructor() {
         super(new Vec2(4, 150), new Vec2(4, 6))
@@ -224,6 +235,8 @@ class Player extends Actor {
                     this.sprite.play('IdleLeft')
                 }
             }
+
+            this.grabStamina = GRAB_STAMINA
         } else {
             if (this.wallSlideDir !== 0) {
                 if (this.wallSlideDir === 1) {
@@ -250,9 +263,13 @@ class Player extends Actor {
 
         this.sprite.render(context, this.position, new Vec2(this.half.x, this.half.y - 2))
         this.drawAABB(context)
+
+        this.staminaBar.render(context)
     }
 
     update(dt: number) {
+        this.staminaBar.value = clamp(this.grabStamina, 0, GRAB_STAMINA) / 100
+
         if (this.launchedBoostCheck()) {
             console.log('we launched bois')
         }
@@ -353,6 +370,13 @@ class Player extends Actor {
             this.speed.y = momentumBoost.y
         }
 
+        if (keyboard.check(GRAB)) {
+            if (this.speed.y >= 0 && Math.sign(this.speed.y) !== -this.facing) {
+                if (this.climbBoundsCheck(this.facing)) {
+                }
+            }
+        }
+
         const mult = this.grounded ? 1 : AIR_MULT
 
         // H-movement
@@ -400,13 +424,31 @@ class Player extends Actor {
                 }
             }
 
-            const mult =
-                Math.abs(this.speed.y) < HALF_GRAV_THRESHOLD &&
-                (keyboard.check(JUMP) || this.autoJump)
-                    ? 0.5
-                    : 1
+            if (
+                keyboard.check(GRAB) &&
+                this.climbBoundsCheck(this.facing) &&
+                this.grabStamina > 0
+            ) {
+                let target = 0
+                if (this.climbDir === -1) {
+                    target = CLIMB_UP_SPEED
+                    this.grabStamina -= CLIMB_UP_COST * dt
+                } else if (this.climbDir === 1) {
+                    target = CLIMB_DOWN_SPEED
+                } else if (this.climbDir === 0) {
+                    this.grabStamina -= CLIMB_STILL_COST * dt
+                }
 
-            this.speed.y = approach(this.speed.y, max, GRAVITY * mult * dt)
+                this.speed.y = approach(this.speed.y, target, CLIMB_ACCEL * dt)
+            } else {
+                const mult =
+                    Math.abs(this.speed.y) < HALF_GRAV_THRESHOLD &&
+                    (keyboard.check(JUMP) || this.autoJump)
+                        ? 0.5
+                        : 1
+
+                this.speed.y = approach(this.speed.y, max, GRAVITY * mult * dt)
+            }
         }
 
         if (this.varJumpTimer > 0) {
@@ -455,6 +497,17 @@ class Player extends Actor {
 
     wallJumpCheck(dir: number) {
         const wallDist = new Vec2(dir * WALL_JUMP_CHECK_DIST, 0)
+        return (
+            collideAt(
+                LevelManager.activeLevel.solids,
+                Vec2.addTwo(this.position, wallDist),
+                this.half
+            ).collided || collideAt(LevelManager.activeLevel.grid, this, wallDist).collided
+        )
+    }
+
+    climbBoundsCheck(dir: number) {
+        const wallDist = new Vec2(dir * CLIMB_CHECK_DIST, 0)
         return (
             collideAt(
                 LevelManager.activeLevel.solids,
@@ -531,6 +584,26 @@ class Player extends Actor {
             }
         }
 
+        if (keyboard.pressed(UP)) {
+            this.climbDir = -1
+        } else if (keyboard.released(UP)) {
+            if (keyboard.check(DOWN)) {
+                this.climbDir = 1
+            } else {
+                this.climbDir = 0
+            }
+        }
+
+        if (keyboard.pressed(DOWN)) {
+            this.climbDir = 1
+        } else if (keyboard.released(DOWN)) {
+            if (keyboard.check(UP)) {
+                this.climbDir = -1
+            } else {
+                this.climbDir = 0
+            }
+        }
+
         if (keyboard.pressed(JUMP)) {
             if (this.jumpGraceTimer > 0) {
                 this.jump()
@@ -541,10 +614,6 @@ class Player extends Actor {
                     this.wallJump(1)
                 }
             }
-        }
-
-        if (keyboard.pressed(TELEPORT)) {
-            this.teleport()
         }
     }
 

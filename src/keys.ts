@@ -62,7 +62,9 @@ class Key {
 }
 
 export const keyboard = new Keyboard()
-export const JUMP = new Key('jump', 'Space', 'KeyC')
+export const JUMP = new Key('jump', 'Space')
+export const UP = new Key('up', 'KeyW', 'ArrowUp')
+export const DOWN = new Key('down', 'KeyS', 'ArrowDown')
 export const LEFT = new Key('left', 'KeyA', 'ArrowLeft')
 export const RIGHT = new Key('right', 'KeyD', 'ArrowRight')
-export const TELEPORT = new Key('teleport', 'KeyX')
+export const GRAB = new Key('grab', 'KeyZ', 'KeyY', 'KeyC', 'KeyX')
