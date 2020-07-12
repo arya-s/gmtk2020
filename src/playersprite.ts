@@ -1,13 +1,9 @@
 import Aseprite from './aseprite'
-import sprite from '../data/sprites/new_player.json'
+import sprite from '../data/sprites/player.json'
 
 class PlayerSprite extends Aseprite {
     constructor() {
         super(sprite)
-    }
-
-    render() {
-        return
     }
 }
 

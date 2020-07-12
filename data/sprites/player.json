@@ -124,22 +124,44 @@
     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
+   },
+   {
+    "filename": "player 14.aseprite",
+    "frame": { "x": 448, "y": 0, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "player 15.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
    }
  ],
  "meta": {
   "app": "http://www.aseprite.org/",
-  "version": "1.2.19.2-x64",
+  "version": "1.2.21-x64",
   "image": "player.png",
   "format": "RGBA8888",
-  "size": { "w": 448, "h": 32 },
+  "size": { "w": 512, "h": 32 },
   "scale": "1",
   "frameTags": [
    { "name": "IdleLeft", "from": 0, "to": 0, "direction": "forward" },
    { "name": "IdleRight", "from": 1, "to": 1, "direction": "forward" },
    { "name": "RunLeft", "from": 2, "to": 4, "direction": "forward" },
-   { "name": "RunRight", "from": 5, "to": 7, "direction": "forward" },
-   { "name": "TeleportRight", "from": 8, "to": 10, "direction": "forward" },
-   { "name": "TeleportLeft", "from": 11, "to": 13, "direction": "forward" }
+   { "name": "JumpLeft", "from": 5, "to": 5, "direction": "forward" },
+   { "name": "FallLeft", "from": 6, "to": 7, "direction": "forward" },
+   { "name": "RunRight", "from": 8, "to": 10, "direction": "forward" },
+   { "name": "JumpRight", "from": 11, "to": 11, "direction": "forward" },
+   { "name": "FallRight", "from": 12, "to": 13, "direction": "forward" },
+   { "name": "WallSlideLeft", "from": 14, "to": 14, "direction": "forward" },
+   { "name": "WallSlideRight", "from": 15, "to": 15, "direction": "forward" }
   ],
   "layers": [
    { "name": "Player", "opacity": 255, "blendMode": "normal" }

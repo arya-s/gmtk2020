@@ -85,6 +85,7 @@ class Player extends Actor {
     private launched = false
     private grabStamina = GRAB_STAMINA
     private staminaBar = new StaminaBar()
+    private climbing = false
 
     constructor() {
         super(new Vec2(4, 150), new Vec2(4, 6))
@@ -244,7 +245,7 @@ class Player extends Actor {
                 } else {
                     this.sprite.play('WallSlideLeft')
                 }
-            } else {
+            } else if (!this.climbing) {
                 if (this.speed.y < 0) {
                     if (this.facing === 1) {
                         this.sprite.play('JumpRight')
@@ -261,14 +262,17 @@ class Player extends Actor {
             }
         }
 
-        this.sprite.render(context, this.position, new Vec2(this.half.x, this.half.y - 2))
-        this.drawAABB(context)
+        this.sprite.render(context, this.position, new Vec2(this.half.x, this.half.y + 4))
+        // this.drawAABB(context)
 
+        this.staminaBar.show = this.climbing
         this.staminaBar.render(context)
     }
 
     update(dt: number) {
         this.staminaBar.value = clamp(this.grabStamina, 0, GRAB_STAMINA) / 100
+        this.staminaBar.position.x = this.position.x - this.staminaBar.width / 2
+        this.staminaBar.position.y = this.top() - 10
 
         if (this.launchedBoostCheck()) {
             console.log('we launched bois')
@@ -429,6 +433,7 @@ class Player extends Actor {
                 this.climbBoundsCheck(this.facing) &&
                 this.grabStamina > 0
             ) {
+                this.climbing = true
                 let target = 0
                 if (this.climbDir === -1) {
                     target = CLIMB_UP_SPEED
@@ -441,6 +446,7 @@ class Player extends Actor {
 
                 this.speed.y = approach(this.speed.y, target, CLIMB_ACCEL * dt)
             } else {
+                this.climbing = false
                 const mult =
                     Math.abs(this.speed.y) < HALF_GRAV_THRESHOLD &&
                     (keyboard.check(JUMP) || this.autoJump)

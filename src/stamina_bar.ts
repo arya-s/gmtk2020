@@ -1,36 +1,20 @@
 import { CONSTANTS, clamp } from './utils'
+import Vec2 from './vec2'
 
 class StaminaBar {
-    private width = 100 / CONSTANTS.SCALE
-    private height = 20 / CONSTANTS.SCALE
+    public width = 8
+    public height = 1.5
     public value = 1.0
+    public position = new Vec2(0, 0)
+    public show = false
 
     render(context: CanvasRenderingContext2D) {
-        // border
-        context.fillStyle = '#fff'
-        context.fillRect(
-            CONSTANTS.WIDTH - 20 / CONSTANTS.SCALE - this.width + 0.5,
-            0 + 20 / CONSTANTS.SCALE + 0.5,
-            this.width,
-            this.height
-        )
+        context.fillStyle = this.show ? '#00000' : '#00000000'
+        context.fillRect(this.position.x + 0.5, this.position.y + 0.5, this.width, this.height)
 
-        context.fillStyle = '#000'
-        context.fillRect(
-            CONSTANTS.WIDTH - 20 / CONSTANTS.SCALE - this.width + 1 + 0.5,
-            0 + 20 / CONSTANTS.SCALE + 1 + 0.5,
-            this.width - 2,
-            this.height - 2
-        )
-
-        const barWidth = clamp(Math.floor(this.width * this.value) - 2, 0, 100)
-        context.fillStyle = '#0373fc'
-        context.fillRect(
-            CONSTANTS.WIDTH - 20 / CONSTANTS.SCALE - this.width + 1 + 0.5,
-            0 + 20 / CONSTANTS.SCALE + 1 + 0.5,
-            barWidth,
-            this.height - 2
-        )
+        const barWidth = clamp(Math.floor(this.width * this.value), 0, 100)
+        context.fillStyle = this.show ? '#0373fc' : '#00000000'
+        context.fillRect(this.position.x + 0.5, this.position.y + 0.5, barWidth, this.height)
     }
 
     update(dt: number) {}
