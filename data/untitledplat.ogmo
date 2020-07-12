@@ -637,6 +637,44 @@
       "values": [
         {"name": "next", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
       ]
+    },
+    {
+      "exportID": "56260691",
+      "name": "enemy",
+      "limit": -1,
+      "size": {"x": 32, "y": 48},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff0000ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 16, "y": 16},
+      "resizeableX": false,
+      "resizeableY": false,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": [],
+      "values": [],
+      "texture": "sprites/enemy_static.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAwCAYAAABwrHhvAAAAAXNSR0IArs4c6QAAAgBJREFUWIXtlyFvwkAUx//dpiBLMEBAkJBgCBI+ABaJQ6EQ+O1jMI9AoeYmZ/cBQC4zS0gqSgamyUId6cT6uuvxrnelZMuS+8ne9d7/3vu/uxawWCwWi+U/s2iOw7xrXF1CyJ8KyJsFYwFcoNVur5xrKuzGVMBqt49FTDZLhxMhBhXnpGE0iZgWB2GvUhYDhMIYAEAa12KcAWK122N+eIYYXOb+48V4vUwZKBUabFA/cAH8ZGF+eEa7NQQAvL0/pcZQDk6Lg0SwaNeiGNTqXWy9dUKEtEZcEkIujTYDJOQxfD0Zq9W7AICttz7Jghg4KhsbS+uB6MVENmj3aVB3cMJFjDzA1V4WIGeBStZuDWnsvAwACMX6lgoN7QuyX2r1LuAh5EQoBaTVXkfCfEfg4fpTOfdEgOx+P3DjBSebZZyBrbdO9QF5oFcp4+54C1T7gOAl6gatB1S9DyR9IHog2gj7jtwNJiYMuQyIItLOAnE+54Gzu4CD6wISoOoCo+vYD1yMnA5m1T67Szk4ACyaYyyaY+3auU7CNAFA8jRU3Y6Z7oI0L6juAp2Qi9+GprUnMn0TjpwORk6H9YRY+1KhAT9wHV3wzAKIaKfOZLNkx2ffh44RxgJET9BhMi0OaOcOPVN9qOZGNiU9Uz2/xE+LkShOwK+SV0DuPyP5m89isWTlC8kgDVSRgIjRAAAAAElFTkSuQmCC"
     }
   ],
   "tilesets": [

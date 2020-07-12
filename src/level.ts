@@ -16,10 +16,8 @@ import WaterfallBottom from './waterfall_bottom'
 import SmallTorch from './small_torch'
 import tilesetSprite from '../data/tileset.png'
 import level_manager from './level_manager'
-import { Block, visitEachChild } from 'typescript'
-import { timeStamp } from 'console'
-import { throws } from 'assert'
 import levelManager from './level_manager'
+import Enemy from './enemy'
 
 interface TileLayers {
     front?: Tile[]
@@ -60,6 +58,8 @@ class Level {
     private removeTimer = REMOVE_TIMER
     public wallToRemove = null
     public startRemoveTimer = false
+
+    public enemy = new Enemy(new Vec2(0, 0)))
 
     constructor(player?: Player) {
         if (player !== undefined) {
@@ -233,6 +233,11 @@ class Level {
                 case 'respawn':
                     this.respawnPoint = new Vec2(x, y)
                     break
+                case 'enemy':
+                    this.enemy.pos.x = x
+                    this.enemy.pos.y = y
+                    break
+
                 default:
                     break
             }
@@ -326,6 +331,7 @@ class Level {
         }
 
         this.grid.render(context)
+        this.enemy.render(context)
     }
 
     onComplete(player: Player) {
@@ -457,6 +463,7 @@ class Level {
         }
 
         this.camera.update(dt)
+        this.enemy.update(dt)
     }
 
     spawnPlayer() {
