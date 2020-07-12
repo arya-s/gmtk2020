@@ -132,14 +132,16 @@ class Grid {
     }
 
     renderCell(context: CanvasRenderingContext2D, pos: Vec2) {
-        context.beginPath()
-        context.moveTo(pos.x, pos.y)
-        context.lineTo(pos.x + this.cellSize.x, pos.y)
-        context.lineTo(pos.x + this.cellSize.x, pos.y + this.cellSize.y)
-        context.lineTo(pos.x, pos.y + this.cellSize.y)
-        context.lineTo(pos.x, pos.y)
-        context.closePath()
-        context.stroke()
+        // context.beginPath()
+        // context.moveTo(pos.x, pos.y)
+        // context.lineTo(pos.x + this.cellSize.x, pos.y)
+        // context.lineTo(pos.x + this.cellSize.x, pos.y + this.cellSize.y)
+        // context.lineTo(pos.x, pos.y + this.cellSize.y)
+        // context.lineTo(pos.x, pos.y)
+        // context.closePath()
+        // context.stroke()
+        context.fillStyle = '#cacaca'
+        context.fillRect(pos.x - 0.5, pos.y + 0.5, this.cellSize.x, this.cellSize.y)
     }
 
     render(context: CanvasRenderingContext2D, color = '#cacaca') {
@@ -160,10 +162,10 @@ class Grid {
                     this.renderCell(context, pos)
                 }
 
-                if (this.collisionGrid[`${x}:${y}`]) {
-                    context.strokeStyle = '#0f0'
-                    this.renderCell(context, pos)
-                }
+                // if (this.collisionGrid[`${x}:${y}`]) {
+                //     context.strokeStyle = '#0f0'
+                //     this.renderCell(context, pos)
+                // }
             }
         }
     }

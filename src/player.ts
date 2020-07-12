@@ -6,6 +6,7 @@ import { collideAt, approach, lerp, collideOutsideAt } from './utils'
 import PlayerSprite from './playersprite'
 import Spike, { KillFrom } from './spike'
 import Solid from './solid'
+import BlockingWall from './blocking_wall'
 import Goal from './goal'
 import Death from './death'
 import Sound from './sound'
@@ -13,6 +14,7 @@ import jumpSoundSrc from '../data/sounds/jump.mp3'
 import launchedSoundSrc from '../data/sounds/launched.mp3'
 import deathSoundSrc from '../data/sounds/death.mp3'
 import MovingPlatform from './moving_platform'
+import BlockingWall from './blocking_wall'
 
 const MAX_RUN = 90
 const RUN_ACCEL = 1000
@@ -133,6 +135,11 @@ class Player extends Actor {
             this.squish()
         } else if (collider instanceof Goal) {
             LevelManager.activeLevel.onComplete()
+        } else if (collider instanceof BlockingWall) {
+            if (collider.removing && !collider.consumed) {
+                LevelManager.updateScore(30)
+                collider.consumed = true
+            }
         }
     }
 
@@ -543,7 +550,8 @@ class Player extends Actor {
 
     squish() {
         this.deathSound.play()
-        LevelManager.reload()
+        LevelManager.levelEnded()
+        // LevelManager.reload()
     }
 }
 

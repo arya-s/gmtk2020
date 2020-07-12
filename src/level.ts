@@ -1,6 +1,7 @@
 import Actor from './actor'
 import Grid from './grid'
 import Solid from './solid'
+import BlockingWall from './blocking_wall'
 import Death from './death'
 import Tile from './tile'
 import Player from './player'
@@ -10,11 +11,15 @@ import Vec2 from './vec2'
 import MovingPlatform from './moving_platform'
 import Spike, { KillFrom } from './spike'
 import JumpThrough from './jump_through'
-import { CONSTANTS } from './utils'
+import { debug, CONSTANTS } from './utils'
 import WaterfallBottom from './waterfall_bottom'
 import SmallTorch from './small_torch'
 import tilesetSprite from '../data/tileset.png'
 import level_manager from './level_manager'
+import { Block, visitEachChild } from 'typescript'
+import { timeStamp } from 'console'
+import { throws } from 'assert'
+import levelManager from './level_manager'
 
 interface TileLayers {
     front?: Tile[]
@@ -27,6 +32,9 @@ interface EntityLayers {
     entity_middle?: any[]
     entity_back?: any[]
 }
+
+const DESPAWN_TIMER = 5
+const REMOVE_TIMER = 4
 
 class Level {
     public camera = new Camera()
@@ -46,6 +54,14 @@ class Level {
     private tileset: HTMLImageElement = new Image()
     private respawnPoint: Vec2
     private nextLevel: string
+    private blockingWalls: Array<BlockingWall> = []
+
+    private despawnTimer = 0
+    private removeTimer = REMOVE_TIMER
+    public wallToRemove = null
+    public startRemoveTimer = false
+
+    public score = 0
 
     constructor() {
         this.player = new Player()
@@ -148,7 +164,9 @@ class Level {
 
             switch (name) {
                 case 'blocking_wall':
-                    this.solids.push(new Solid(pos, half))
+                    const wall = new BlockingWall(pos, half)
+                    this.solids.push(wall)
+                    this.blockingWalls.push(wall)
                     break
                 case 'jump_through':
                     this.jumpThroughs.push(new JumpThrough(pos, half))
@@ -298,10 +316,12 @@ class Level {
         for (const solid of this.solids) {
             if (solid instanceof MovingPlatform) {
                 ;(solid as MovingPlatform).render(context)
+            } else if (solid instanceof BlockingWall) {
+                ;(solid as BlockingWall).render(context)
             }
         }
 
-        // this.grid.render(context)
+        this.grid.render(context)
     }
 
     onComplete() {
@@ -374,6 +394,42 @@ class Level {
     }
 
     update(dt: number) {
+        if (this.blockingWalls.length === 0) {
+            levelManager.levelEnded()
+            return
+        }
+
+        if (this.despawnTimer <= 0) {
+            const randomWallIdx = Math.floor(Math.random() * this.blockingWalls.length)
+            const wallToRemove = this.blockingWalls[randomWallIdx]
+            wallToRemove.color = '#ff0000'
+            wallToRemove.removing = true
+            this.wallToRemove = wallToRemove
+            this.despawnTimer = DESPAWN_TIMER
+            this.removeTimer = REMOVE_TIMER
+            this.startRemoveTimer = true
+        } else {
+            this.despawnTimer -= dt
+        }
+
+        if (this.startRemoveTimer) {
+            if (this.removeTimer <= 0) {
+                const solidIdx = this.solids.findIndex((v) => v.id === this.wallToRemove.id)
+                const wallIdx = this.blockingWalls.findIndex((v) => v.id === this.wallToRemove.id)
+
+                this.wallToRemove.color = '#ffff00'
+
+                if (solidIdx !== -1 && wallIdx !== -1) {
+                    this.solids.splice(solidIdx, 1)
+                    this.blockingWalls.splice(wallIdx, 1)
+                }
+                this.startRemoveTimer = false
+                this.score += 10
+            } else {
+                this.removeTimer -= dt
+            }
+        }
+
         for (const actor of this.actors) {
             actor.update(dt)
         }

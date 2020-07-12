@@ -4,13 +4,18 @@ import Vec2 from './vec2'
 import LevelManager from './level_manager'
 import { overlap } from './utils'
 
+let id = 0
+
 class Solid extends Entity {
     public collidable: boolean
     public speed = new Vec2(0, 0)
+    public id
 
     constructor(public position: Vec2, public half: Vec2) {
         super(position, half)
         this.collidable = true
+        this.id = id
+        id++
     }
 
     moveX(amount: number) {
