@@ -38,8 +38,7 @@
           "originX": 0,
           "originY": 0,
           "values": {"next": "level2"}
-        },
-        {"name": "enemy", "id": 37, "_eid": "56260691", "x": 112, "y": 80, "originX": 0, "originY": 0}
+        }
       ]
     },
     {
