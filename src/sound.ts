@@ -7,8 +7,9 @@ class Sound {
         document.body.appendChild(this.audio)
     }
 
-    play() {
+    play(loop = false) {
         this.audio.play()
+        this.audio.loop = loop
     }
 
     stop() {

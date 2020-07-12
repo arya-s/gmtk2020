@@ -2,6 +2,8 @@ import levelIndex from '../data/levels/*.json'
 import Level from './level'
 import Player from './player'
 import { kFormatter } from './utils'
+import Sound from './sound'
+import threatLoopSoudnSrc from '../data/sounds/threat_loop.mp3'
 
 interface LevelIndex {
     [levelName: string]: any
@@ -12,9 +14,11 @@ class LevelManager {
     public activeLevel: Level
     public levelRunning = true
     public score = 0
+    public sound = new Sound(threatLoopSoudnSrc)
 
     init() {
         this.initLevel('level1')
+        this.sound.play(true)
     }
 
     initLevel(level: string, player?: Player) {
