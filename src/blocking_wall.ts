@@ -13,7 +13,7 @@ class BlockingWall extends Solid {
     public renderHealthy = true
 
     render(context: CanvasRenderingContext2D) {
-        if (!this.renderHealthy) {
+        if (!this.renderHealthy && !this.consumed) {
             BlockingWallSpritesheet.render(
                 context,
                 this.position,
