@@ -4,13 +4,25 @@ class Keyboard {
     private next: { [key: string]: boolean } = {}
 
     constructor() {
-        window.addEventListener('keydown', (event) => {
-            this.next[event.code] = true
-        })
+        window.addEventListener(
+            'keydown',
+            (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                this.next[event.code] = true
+            },
+            false
+        )
 
-        window.addEventListener('keyup', (event) => {
-            this.next[event.code] = false
-        })
+        window.addEventListener(
+            'keyup',
+            (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                this.next[event.code] = false
+            },
+            false
+        )
     }
 
     update() {

@@ -646,8 +646,8 @@ class Player extends Actor {
     }
 
     squish() {
-        this.deathSound.play()
-        LevelManager.levelEnded()
+        // this.deathSound.play()
+        // LevelManager.levelEnded()
         // LevelManager.reload()
     }
 }
