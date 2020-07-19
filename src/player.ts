@@ -1,7 +1,7 @@
 import Actor from './actor'
 import LevelManager from './level_manager'
 import Vec2 from './vec2'
-import { keyboard, JUMP, UP, DOWN, LEFT, RIGHT, GRAB } from './keys'
+import { keyboard, JUMP, UP, DOWN, LEFT, RIGHT, GRAB, InputRumble } from './keys'
 import { clamp, collideAt, approach, lerp, collideOutsideAt } from './utils'
 import PlayerSprite from './playersprite'
 import Spike, { KillFrom } from './spike'
@@ -323,6 +323,10 @@ class Player extends Actor {
             this.jumpGraceTimer = JUMP_GRACE_TIME
             this.wallSlideTimer = WALL_SLIDE_TIME
             this.autoJump = false
+
+            if (!this.wasGrounded) {
+                keyboard.rumble(InputRumble.BOTH, 100)
+            }
         } else if (this.jumpGraceTimer > 0) {
             this.jumpGraceTimer -= dt
         }
@@ -464,6 +468,12 @@ class Player extends Actor {
                     target = CLIMB_DOWN_SPEED
                 } else if (this.climbDir === 0) {
                     this.grabStamina -= CLIMB_STILL_COST * dt
+                }
+
+                if (this.grabStamina <= 40) {
+                    keyboard.rumble(InputRumble.BOTH, 200)
+                } else if (this.grabStamina <= 20) {
+                    keyboard.rumble(InputRumble.BOTH, 600)
                 }
 
                 this.speed.y = approach(this.speed.y, target, CLIMB_ACCEL * dt)

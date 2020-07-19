@@ -1,5 +1,12 @@
 const PREVENT_DEFAULT_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space']
 const AXIS_DEADZONE = 0.3
+import { clamp } from './utils'
+
+export const enum InputRumble {
+    LEFT,
+    RIGHT,
+    BOTH,
+}
 
 class Keyboard {
     private previous: { [key: string]: boolean } = {}
@@ -52,6 +59,25 @@ class Keyboard {
         window.addEventListener('gamepaddiscconnected', (event: GamepadEvent) =>
             handleGamepad(event, false)
         )
+    }
+
+    rumble(side: InputRumble, rumbleDurationMs: number, startDelay = 0) {
+        // we don't allow rumbling more than 1s
+        const duration = clamp(rumbleDurationMs, 0, 1000)
+
+        const weakMagnitude = side === InputRumble.LEFT || InputRumble.BOTH ? 1 : 0
+        const strongMagnitude = side === InputRumble.RIGHT || InputRumble.BOTH ? 1 : 0
+
+        for (const gamepad of navigator.getGamepads()) {
+            if (gamepad) {
+                gamepad.vibrationActuator.playEffect('dual-rumble', {
+                    startDelay,
+                    duration,
+                    weakMagnitude,
+                    strongMagnitude,
+                })
+            }
+        }
     }
 
     updateGamepads() {
