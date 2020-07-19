@@ -51,9 +51,10 @@ const CLIMB_UP_CHECK_DIST = 2
 const CLIMB_UP_SPEED = -45
 const CLIMB_DOWN_SPEED = 80
 const CLIMB_ACCEL = 900
-const GRAB_STAMINA = 100
-const CLIMB_UP_COST = 100 / 1.4
-const CLIMB_STILL_COST = 100 / 2
+const GRAB_STAMINA = 110
+const CLIMB_UP_COST = 100 / 2.2
+const CLIMB_STILL_COST = 100 / 10
+const CLIMB_JUMP_COST = 110 / 4
 
 class Player extends Actor {
     private sprite: PlayerSprite = new PlayerSprite()
@@ -533,6 +534,19 @@ class Player extends Actor {
         this.wallBoostTimer = 0
     }
 
+    climbJump() {
+        if (!this.grounded) {
+            this.grabStamina -= CLIMB_JUMP_COST
+        }
+        this.jump()
+
+        if (this.facing === 1) {
+            this.sprite.play('JumpRight')
+        } else {
+            this.sprite.play('JumpLeft')
+        }
+    }
+
     wallJumpCheck(dir: number) {
         const wallDist = new Vec2(dir * WALL_JUMP_CHECK_DIST, 0)
         return (
@@ -644,12 +658,21 @@ class Player extends Actor {
 
         if (keyboard.pressed(JUMP)) {
             if (this.jumpGraceTimer > 0) {
+                console.log('we normal jumping')
                 this.jump()
             } else {
                 if (this.wallJumpCheck(1)) {
-                    this.wallJump(-1)
+                    if (this.facing === 1 && keyboard.check(GRAB) && this.grabStamina > 0) {
+                        this.climbJump()
+                    } else {
+                        this.wallJump(-1)
+                    }
                 } else if (this.wallJumpCheck(-1)) {
-                    this.wallJump(1)
+                    if (this.facing === -1 && keyboard.check(GRAB) && this.grabStamina > 0) {
+                        this.climbJump()
+                    } else {
+                        this.wallJump(1)
+                    }
                 }
             }
         }
